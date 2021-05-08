@@ -103,19 +103,23 @@ class CartPole:
 
 if __name__ == "__main__":
     env = CartPole(dt=0.02)
-    # state = env.init_state()
-    # state_seq = [state]
-    # num_steps = 100
-    # dt = 0.02
-    # f_des_seq = np.zeros(num_steps)
-    # f_des_seq[:10] += 10
-    # for i in range(num_steps):
-    #     new_state = env.step(state, f_des_seq[i], dt)
-    #     state = new_state
-    #     state_seq.append(state)
-    # # print(state_seq)
-    # env.show_animation(state_seq, dt, step=1)
+    state = env.init_state()
+    state_seq = [state]
+    num_steps = 100
+    dt = 0.02
+    f_des_seq = np.zeros(num_steps)
+    f_des_seq[:10] += 10
+    f_des_seq[10:25] -=10
+    f_des_seq[25:40] +=15 
+    f_des_seq[40:60] -=15
+    f_des_seq[60:80] +=5
+    for i in range(num_steps):
+        new_state = env.step(state, f_des_seq[i], dt)
+        state = new_state
+        state_seq.append(state)
+    # print(state_seq)
+    env.show_animation(state_seq, dt, step=1)
 
-    state = np.array([1, 1, np.pi/6, 1, 1])
-    next_state = env.step(state, 0, 0.02, 0)
-    print(next_state)
+    # state = np.array([1, 1, np.pi/6, 1, 1])
+    # next_state = env.step(state, 0, 0.02, 0)
+    # print(next_state)

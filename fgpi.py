@@ -8,7 +8,7 @@ class FGPI:
     def __init__(self, N, rho_sqrtinv, param_lambda, dt):
         self.N = N
         prior_sigmas = np.array([1e-5, 1e-5, 1e-5, 1e-5, 1e-5])
-        transition_sigmas = np.array([1e-5, 1e-5, 1e-5, 1e-5, 20*rho_sqrtinv*np.sqrt(dt)])
+        transition_sigmas = np.array([1e-5, 1e-5, 1e-5, 1e-5, 20*rho_sqrtinv/np.sqrt(dt)])
         cost_sigmas = np.sqrt(param_lambda/dt) * np.array([1, 1, 1/np.sqrt(500), 1])
         self.prior_noise = gtsam.noiseModel.Diagonal.Sigmas(prior_sigmas)
         self.transition_noise = gtsam.noiseModel.Diagonal.Sigmas(transition_sigmas)
@@ -19,7 +19,7 @@ class FGPI:
         return gtsam.Symbol('x', i).key()
 
     def compute_G(self):
-        return 1.0/20
+        return 1.0
 
     def compute_control(self, start_state, nominal_states):
         # build graph
@@ -39,10 +39,22 @@ class FGPI:
             init_values.insert(x_key, np.array(nominal_states[i]))
         
         # optimize
+
+        # print(graph)
+        # print(init_values)
+
+        # linear_graph = graph.linearize(init_values)
+        # print(linear_graph)
+
         params = gtsam.LevenbergMarquardtParams()
-        params.setVerbosityLM("SUMMARY")
-        optimizer = gtsam.DoglegOptimizer(graph, init_values)
+        params.setMaxIterations(20)
+        # params.setVerbosityLM("SUMMARY")
+        params.setLinearSolverType("MULTIFRONTAL_QR")
+        optimizer = gtsam.LevenbergMarquardtOptimizer(graph, init_values, params)
         results = optimizer.optimize()
+        # results = init_values
+
+        print("error:", graph.error(results))
 
         # get results
         states = []

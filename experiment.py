@@ -48,11 +48,19 @@ def run_fgpi():
     state_seq = [curr_state]
     total_cost = 0
     
-    nominal_states = env.simulate(curr_state, np.zeros(control_horizon), dt, rho_sqrtinv)
+    nominal_controls = np.zeros(control_horizon)
+    # nominal_controls[:10] += 10
+    # nominal_controls[10:20] -=10
+    # nominal_controls[20:30] +=15 
+    # nominal_controls[30:40] -=15
+    # nominal_controls[40:50] +=5
+    nominal_states = env.simulate(curr_state, nominal_controls, dt, rho_sqrtinv*np.sqrt(v))
 
-    for k in range(1):
+    for k in range(200):
         print(k)
         # compute control
+        # rate = 1000 - k * 5
+        
         curr_control, nominal_states = fgpi.compute_control(curr_state, nominal_states)
         print("current controls")
         print(curr_control)
