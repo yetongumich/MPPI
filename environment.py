@@ -140,6 +140,3 @@ if __name__ == "__main__":
     # print(state_seq)
     env.show_animation(state_seq, dt, step=1)
 
-    # state = np.array([1, 1, np.pi/6, 1, 1])
-    # next_state = env.step(state, 0, 0.02, 0)
-    # print(next_state)

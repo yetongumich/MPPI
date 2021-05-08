@@ -18,10 +18,6 @@ class FGPI:
     def state_key(self, i):
         return gtsam.Symbol('x', i).key()
 
-    def compute_G(self):
-        # return 1.0/20.0
-        return 1.0
-
     def compute_control(self, start_state, nominal_states):
         # build graph
         graph = gtsam.NonlinearFactorGraph()
@@ -40,22 +36,13 @@ class FGPI:
             init_values.insert(x_key, np.array(nominal_states[i]))
         
         # optimize
-
-        # print(graph)
-        # print(init_values)
-
-        # linear_graph = graph.linearize(init_values)
-        # print(linear_graph)
-
         params = gtsam.LevenbergMarquardtParams()
         params.setMaxIterations(20)
         # params.setVerbosityLM("SUMMARY")
         params.setLinearSolverType("MULTIFRONTAL_QR")
         optimizer = gtsam.LevenbergMarquardtOptimizer(graph, init_values, params)
         results = optimizer.optimize()
-        # results = init_values
-
-        print("error:", graph.error(results))
+        # print("error:", graph.error(results))
 
         # get results
         states = []
@@ -63,9 +50,6 @@ class FGPI:
             x_key = self.state_key(i)
             states.append(results.atVector(x_key))
         
-        G = self.compute_G()
         dx_c = states[1][-1] - states[0][-1]
-        # u_star = G * dx_c
         u_star = states[0][-1] + 1.1*dx_c/(20*self.dt)
-
         return u_star, states 

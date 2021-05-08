@@ -19,6 +19,7 @@ param_lambda = rho_sqrtinv ** 2 / dt
 total_steps = 500
 
 def run_mppi():
+    """ Run experiments for MPPI. """
     mppi = MPPI(K=num_rollouts, N=control_horizon, v=v, dt=dt, rho_sqrtinv=rho_sqrtinv, param_lambda=param_lambda)
     curr_state = env.init_state()
     state_seq = [curr_state]
@@ -52,6 +53,7 @@ def run_mppi():
     return total_cost, avg_time
 
 def run_fgpi():
+    """ Run experiments for FGPI. """
     fgpi = FGPI(N=control_horizon, rho_sqrtinv=rho_sqrtinv, param_lambda=param_lambda, dt=dt)
     curr_state = env.init_state()
     state_seq = [curr_state]

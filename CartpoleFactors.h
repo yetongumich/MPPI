@@ -6,12 +6,11 @@
  * -------------------------------------------------------------------------- */
 
 /**
- * @file  PneumaticActuatorFactor.h
- * @brief Pneumatic factors.
+ * @file  CartpoleFactors.h
+ * @brief Cart pole dynamcis and cost factors
  * @Author: Yetong Zhang
  */
 
-// TODO(yetong): split into different files
 
 #pragma once
 
