@@ -19,6 +19,7 @@ class FGPI:
         return gtsam.Symbol('x', i).key()
 
     def compute_G(self):
+        # return 1.0/20.0
         return 1.0
 
     def compute_control(self, start_state, nominal_states):
@@ -64,6 +65,7 @@ class FGPI:
         
         G = self.compute_G()
         dx_c = states[1][-1] - states[0][-1]
-        u_star = G*dx_c
+        # u_star = G * dx_c
+        u_star = states[0][-1] + 1.1*dx_c/(20*self.dt)
 
         return u_star, states 

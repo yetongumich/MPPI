@@ -2,6 +2,7 @@ from environment import CartPole
 from mppi import MPPI
 from fgpi import FGPI
 import numpy as np
+import time
 
 # construct environment
 dt = 0.02
@@ -15,7 +16,7 @@ rho_sqrtinv=0.5
 param_lambda = rho_sqrtinv ** 2 / dt
 # param_lambda = 100
 
-total_steps = 200
+total_steps = 500
 
 def run_mppi():
     mppi = MPPI(K=num_rollouts, N=control_horizon, v=v, dt=dt, rho_sqrtinv=rho_sqrtinv, param_lambda=param_lambda)
@@ -23,12 +24,17 @@ def run_mppi():
     state_seq = [curr_state]
     total_cost = 0
     nominal_controls = np.zeros(control_horizon)
+    update_times = []
     for k in range(total_steps):
         print(k)
-        # compute control 
+        # compute control
+        start_time = time.time()
         new_controls = mppi.compute_controls(env, curr_state, nominal_controls)
-        print("new controls")
-        print(new_controls)
+        end_time = time.time()
+        duration = end_time - start_time
+        update_times.append(duration)
+        # print("new controls")
+        # print(new_controls)
         # execute first control
         curr_control = new_controls[0]
         new_state = env.step(curr_state, curr_control, dt)
@@ -40,7 +46,10 @@ def run_mppi():
         nominal_controls = np.append(np.array(new_controls[1:]),0)
 
     print("total cost: ", total_cost)
-    env.show_animation(state_seq, dt, step=1)
+    # env.show_animation(state_seq, dt, step=1)
+    avg_time = sum(update_times) / len(update_times)
+    print("avg time: ", avg_time)
+    return total_cost, avg_time
 
 def run_fgpi():
     fgpi = FGPI(N=control_horizon, rho_sqrtinv=rho_sqrtinv, param_lambda=param_lambda, dt=dt)
@@ -56,12 +65,18 @@ def run_fgpi():
     # nominal_controls[40:50] +=5
     nominal_states = env.simulate(curr_state, nominal_controls, dt, rho_sqrtinv*np.sqrt(v))
 
-    for k in range(200):
+    update_times = []
+
+    for k in range(total_steps):
         print(k)
         # compute control
         # rate = 1000 - k * 5
-        
+        # nominal_states = env.simulate(curr_state, nominal_controls, dt, rho_sqrtinv*np.sqrt(v))
+        start_time = time.time()
         curr_control, nominal_states = fgpi.compute_control(curr_state, nominal_states)
+        end_time = time.time()
+        duration = end_time - start_time
+        update_times.append(duration)
         print("current controls")
         print(curr_control)
 
@@ -80,7 +95,20 @@ def run_fgpi():
         nominal_states.append(last_next_state)
 
     print("total cost: ", total_cost)
-    env.show_animation(state_seq, dt, step=1)
+    avg_time = sum(update_times) / len(update_times)
+    print("avg time: ", avg_time)
+    # env.show_animation(state_seq, dt, step=1)
+    env.show_trajectory(state_seq, step=1)
+    return total_cost, avg_time
 
 if __name__ == "__main__":
+    # costs = []
+    # avg_times = []
+    # for i in range(10):
+    #     # cost, avg_time = run_fgpi()
+    #     cost, avg_time = run_mppi()
+    #     costs.append(cost)
+    #     avg_times.append(avg_time)
+    # print("average cost: ", sum(costs)/len(costs))
+    # print("average time: ", sum(avg_times)/len(avg_times))
     run_fgpi()

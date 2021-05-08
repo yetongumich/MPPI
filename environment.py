@@ -1,6 +1,7 @@
 """ Environment setup. """
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
@@ -81,6 +82,25 @@ class CartPole:
         ani = FuncAnimation(fig, animate, frames=frames, interval=10)
         plt.show()
     
+    def show_trajectory(self, state_seq, step=1):
+        cmap = matplotlib.cm.get_cmap('Spectral')
+        num_steps = len(state_seq)
+        fig = plt.figure(figsize=(40, 5), dpi=80)
+        ax = fig.add_subplot(1, 1, 1)
+        for i in np.arange(0, num_steps, step):
+            state = state_seq[i]
+            x = state[0]
+            theta = state[2]
+            # cart_x = [x-0.1, x+0.1]
+            # cart_y = [0, 0]
+            # ax.plot(cart_x, cart_y, color='r')
+
+            pole_x = [x, x+np.sin(theta)*self.l] 
+            pole_y = [0, -np.cos(theta) * self.l]
+            ax.plot(pole_x, pole_y, color=cmap(i/num_steps))
+        plt.savefig("traj.png")
+        plt.show()
+
     def state_cost(self, state):
         p = state[0]
         pdot = state[1]
