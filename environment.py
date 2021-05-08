@@ -91,17 +91,31 @@ class CartPole:
     def control_cost(self, control1, control2):
         return control1 * control2
 
+    def simulate(self, first_state, control_seq, dt, rho_sqrtinv):
+        state = first_state
+        state_seq = [state]
+        for i in range(len(control_seq)):
+            new_state = self.step(state, control_seq[i], dt, rho_sqrtinv)
+            state = new_state
+            state_seq.append(state)
+        return state_seq
+
+
 if __name__ == "__main__":
-    env = CartPole()
-    state = env.init_state()
-    state_seq = [state]
-    num_steps = 100
-    dt = 0.02
-    f_des_seq = np.zeros(num_steps)
-    f_des_seq[:10] += 10
-    for i in range(num_steps):
-        new_state = env.step(state, f_des_seq[i], dt)
-        state = new_state
-        state_seq.append(state)
-    # print(state_seq)
-    env.show_animation(state_seq, dt, step=1)
+    env = CartPole(dt=0.02)
+    # state = env.init_state()
+    # state_seq = [state]
+    # num_steps = 100
+    # dt = 0.02
+    # f_des_seq = np.zeros(num_steps)
+    # f_des_seq[:10] += 10
+    # for i in range(num_steps):
+    #     new_state = env.step(state, f_des_seq[i], dt)
+    #     state = new_state
+    #     state_seq.append(state)
+    # # print(state_seq)
+    # env.show_animation(state_seq, dt, step=1)
+
+    state = np.array([1, 1, np.pi/6, 1, 1])
+    next_state = env.step(state, 0, 0.02, 0)
+    print(next_state)
